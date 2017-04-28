@@ -2,6 +2,7 @@
 
 body {
   font-family: 'Raleway', sans-serif;
+  max-width: 768px;
 }
 
 .header {

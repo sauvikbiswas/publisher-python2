@@ -26,7 +26,7 @@ def scanVariables(folder):
 
 def postList(postIdDict):
     postHyperLink = []
-    for item in sorted(postIdDict, key=lambda x: postIdDict[x][1]):
+    for item in sorted(postIdDict, key=lambda x: postIdDict[x][1], reverse=True):
         postHyperLink.append('* ['+postIdDict[item][2]+']'+'('+postIdDict[item][0]+')')
     postHyperLink = '\n'.join(postHyperLink)
     return postHyperLink
