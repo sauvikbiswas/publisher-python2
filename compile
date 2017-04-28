@@ -1,3 +1,3 @@
 python compile.py $1
+rsync -avz $1/sync/ $1/html
 rsync -avz $1/html/ root@212.237.28.106:/var/www/html
-rsync -avz $1/images/ root@212.237.28.106:/var/www/html/images
