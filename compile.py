@@ -21,12 +21,20 @@ def scanVariables(folder):
             postVars = parse.readPostVars(folder, filename)
             if 'post_id' in postVars:
                 postIdDict[postVars['post_id']] = (filename.replace('.md','.html'),
-                    postVars['post_date'])
+                    postVars['post_date'], postVars['post_title'])
     return postIdDict
 
+def postList(postIdDict):
+    postHyperLink = []
+    for item in sorted(postIdDict, key=lambda x: postIdDict[x][1]):
+        postHyperLink.append('* ['+postIdDict[item][2]+']'+'('+postIdDict[item][0]+')')
+    postHyperLink = '\n'.join(postHyperLink)
+    return postHyperLink
+
 postIdDict = scanVariables(folder)
-print postIdDict
+extraVars = {}
+extraVars['post_list'] = postList(postIdDict)
 for root, dirs, files in os.walk(postFolder):
     for filename in files:
-        data, var = parse.generatePost(folder, filename, postIdDict)
+        data, var = parse.generatePost(folder, filename, postIdDict, extraVars)
         writeFile(htmlFolder, filename.replace('.md','.html'), data)
