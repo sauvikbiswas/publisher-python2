@@ -37,4 +37,5 @@ extraVars['post_list'] = postList(postIdDict)
 for root, dirs, files in os.walk(postFolder):
     for filename in files:
         data, var = parse.generatePost(folder, filename, postIdDict, extraVars)
+        print filename.replace('.md','.html')
         writeFile(htmlFolder, filename.replace('.md','.html'), data)
