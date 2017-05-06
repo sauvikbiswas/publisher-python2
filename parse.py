@@ -80,7 +80,6 @@ def scanFunctions(folder):
     '''
     data = readFile(os.path.join(folder,'functions.py'))
     functionRepo = {}
-    sys.path.insert(0, folder)
     for line in data:
         match = functionRe.search(line)
         if match:
