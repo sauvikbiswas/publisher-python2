@@ -1,0 +1,3 @@
+[submodule "bc_blog"]
+	path = bc_blog
+	url = https://github.com/sauvikbiswas/bc_blog
