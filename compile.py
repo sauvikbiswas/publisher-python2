@@ -1,6 +1,7 @@
 import os
 import sys
 import parse
+from functions import post_list
 
 folder = sys.argv[1]
 
@@ -18,22 +19,20 @@ def scanVariables(folder):
     postIdDict = {}
     for root, dirs, files in os.walk(os.path.join(folder, 'posts')):
         for filename in files:
-            postVars = parse.readPostVars(folder, filename)
+            postFile = os.path.join(folder, 'posts', filename)
+            data = parse.readFile(postFile)
+            _, postVars = parse.parseVars(data, removeVars=False)
             if 'post_id' in postVars:
                 postIdDict[postVars['post_id']] = (filename.replace('.md','.html'),
-                    postVars['post_date'], postVars['post_title'])
+                    postVars)
     return postIdDict
 
-def postList(postIdDict):
-    postHyperLink = []
-    for item in sorted(postIdDict, key=lambda x: postIdDict[x][1], reverse=True):
-        postHyperLink.append('* ['+postIdDict[item][2]+']'+'('+postIdDict[item][0]+')')
-    postHyperLink = '\n'.join(postHyperLink)
-    return postHyperLink
-
+functionRepo = parse.scanFunctions(folder)
 postIdDict = scanVariables(folder)
 extraVars = {}
-extraVars['post_list'] = postList(postIdDict)
+for functionName in functionRepo:
+    extraVars[functionName] = functionRepo[functionName](postIdDict)
+    
 for root, dirs, files in os.walk(postFolder):
     for filename in files:
         data, var = parse.generatePost(folder, filename, postIdDict, extraVars)

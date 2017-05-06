@@ -1,14 +1,17 @@
 import re
 from markdown import markdown
 import os
+import sys
 
 varDeclareRe = re.compile('^\s*\$\s*(\w+)\s*:\s*(.*)')
 emptyLineRe = re.compile('^\s*$')
 varSubstituteRe = re.compile('\'\((\w+)\)')
 linkRe = re.compile('(\[.*?\]\()(.*?)(\))')
+functionRe = re.compile('^def ([^( ]+)')
 
-def parseVars(data):
-    ''' Parses the data to find $ variable : value lines. Removes such lines
+def parseVars(data, removeVars = True):
+    ''' Parses the data to find $ variable : value lines.
+    If removeVars is set to True, then the functon removes such lines
     from data and creates a dictionary of variable -> value pairs. All empty
     lines following the $ lines are also removed '''
 
@@ -19,7 +22,8 @@ def parseVars(data):
         match = varDeclareRe.search(line)
         if match:
             postVars[match.group(1)] = match.group(2)
-            flagFill = False
+            if removeVars:
+                flagFill = False
         else:
             if not flagFill:
                 match = emptyLineRe.search(line)
@@ -29,7 +33,7 @@ def parseVars(data):
                 modData.append(line)
     return modData, postVars
 
-def substituteVars(modData, postVars, postIdDict={}):
+def substituteVars(modData, postVars, postIdDict = {}):
     ''' Given a dictionary or variable -> value pairs (postVars), it takes
     modData and substitutes all occurances of '(variable) to corresponding
     values '''
@@ -53,6 +57,7 @@ def substituteVars(modData, postVars, postIdDict={}):
         for match in matchiter:
             postId = match.group(2)
             if postId in postIdDict:
+                print postIdDict[postId]
                 replacementDict[match.group(0)] = match.group(1) + \
                     postIdDict[postId][0] + match.group(3)
 
@@ -70,11 +75,25 @@ def readFile(filename):
             data = fppost.read().strip().split('\n')
     return data
 
-def generatePost(folder, postFile, postIdDict = {}, postVarsExtra={}):
+def scanFunctions(folder):
+    ''' Scan all L1 functions in folder/functions.py
+    '''
+    data = readFile(os.path.join(folder,'functions.py'))
+    functionRepo = {}
+    sys.path.insert(0, folder)
+    for line in data:
+        match = functionRe.search(line)
+        if match:
+            functionRepo[match.group(1)] = None
+    fn = __import__('functions', globals(), locals(), functionRepo.keys(), -1)
+    for functionName in functionRepo.keys():
+        functionRepo[functionName] = getattr(fn, functionName)
+    return functionRepo
+
+def generatePost(folder, postFile, postIdDict = {}, postVarsExtra = {}):
     ''' Given the blog folder and the postfile in posts, generates a complete
     HTML file. No markdown transformation is applied to the header and footer
     '''
-
     headerFile = os.path.join(folder,'header.html')
     footerFile = os.path.join(folder,'footer.html')
     postFile = os.path.join(folder, 'posts', postFile)
@@ -95,9 +114,3 @@ def generatePost(folder, postFile, postIdDict = {}, postVarsExtra={}):
         ])
 
     return postHTMLData, postVars
-
-def readPostVars(folder, postFile):
-    postFile = os.path.join(folder, 'posts', postFile)
-    data = readFile(postFile)
-    _, postVars = parseVars(data)
-    return postVars
