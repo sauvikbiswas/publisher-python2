@@ -3,4 +3,7 @@ cp $1/functions.py .
 python compile.py $1
 rsync -avz $1/sync/ $1/html
 rm functions.py*
-rsync -avz $1/html/ root@212.237.28.106:/var/www/html --delete
+if [ $# -lt 2 ]
+then
+  rsync -avz $1/html/ root@212.237.28.106:/var/www/html --delete
+fi
