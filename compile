@@ -5,5 +5,5 @@ rsync -avz $1/sync/ $1/html
 rm functions.py*
 if [ $# -lt 2 ]
 then
-  rsync -avz $1/html/ root@212.237.28.106:/var/www/html --delete
+  rsync -avz $1/html/ root@80.211.144.7:/var/www/html --delete
 fi
