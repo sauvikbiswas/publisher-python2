@@ -1,0 +1,9 @@
+rm -r $1/html/*
+cp $1/functions.py .
+python compile.py $1
+rsync -avz $1/sync/ $1/html
+rm functions.py*
+if [ $# -lt 2 ]
+then
+  rsync -avz $1/html/ $USERNAME@$HOST:$TARGET_DIR --delete
+fi
