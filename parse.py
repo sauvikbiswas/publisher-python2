@@ -2,6 +2,7 @@ import re
 from markdown import markdown
 import os
 import sys
+from substitute import substitutionMap
 
 varDeclareRe = re.compile('^\s*\$\s*(\w+)\s*:\s*(.*)')
 emptyLineRe = re.compile('^\s*$')
@@ -111,5 +112,8 @@ def generatePost(folder, postFile, postIdDict = {}, postVarsExtra = {}):
         markdown('\n'.join(mdData[len(datalist[0]):-len(datalist[2])])),
         '\n'.join(mdData[-len(datalist[2]):])
         ])
+
+    for key in substitutionMap:
+        postHTMLData = re.sub(key, substitutionMap[key], postHTMLData)
 
     return postHTMLData, postVars

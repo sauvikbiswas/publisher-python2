@@ -1,0 +1,4 @@
+substitutionMap = {
+    '--': '&mdash;',
+    '...': '&hellip;',
+}
