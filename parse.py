@@ -71,9 +71,15 @@ def substituteVars(modData, postVars, postIdDict = {}):
 def readFile(filename):
     ''' Reads a markdown file and returns a list of strings '''
     data = []
+
+    tickCodeRe = re.compile('```(\n.*?)+?```|~~~~(\n.*?)+?~~~~')
+    def tick2indent(matchobject):
+        return '\n'.join(['\t\t'+line for line in matchobject.group(0).split('\n')[1:-1]])
+
     if os.path.isfile(filename):
         with open(filename, 'rU') as fppost:
-            data = fppost.read().strip().split('\n')
+            readData = fppost.read()
+            data = tickCodeRe.sub(tick2indent,readData).strip().split('\n')
     return data
 
 def scanFunctions(folder):
