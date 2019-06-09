@@ -115,7 +115,7 @@ def generatePost(folder, postFile, postIdDict = {}, postVarsExtra = {}):
     mdData = substituteVars(modData, postVars, postIdDict)
     postHTMLData = '\n'.join([
         '\n'.join(mdData[:len(datalist[0])]),
-        markdown('\n'.join(mdData[len(datalist[0]):-len(datalist[2])])),
+        markdown('\n'.join(mdData[len(datalist[0]):-len(datalist[2])]), extensions=['tables']),
         '\n'.join(mdData[-len(datalist[2]):])
         ])
 
