@@ -72,14 +72,22 @@ def readFile(filename):
     ''' Reads a markdown file and returns a list of strings '''
     data = []
 
-    tickCodeRe = re.compile('```(\n.*?)+?```|~~~~(\n.*?)+?~~~~')
+    tickCodeRe = re.compile('```(\n.*?)+?```')
+    tildeCodeRe = re.compile('~~~~(\n.*?)+?~~~~')
     def tick2indent(matchobject):
-        return '\n'.join(['\t\t'+line for line in matchobject.group(0).split('\n')[1:-1]])
+        return '<div class="code-block"><pre><code>' + \
+            '\n'.join([line for line in matchobject.group(0).split('\n')[1:-1]]) + \
+            '\n</pre></code></div>'
+    def tilde2indent(matchobject):
+        return '<div class="file-code"><pre><code>' + \
+            '\n'.join([line for line in matchobject.group(0).split('\n')[1:-1]]) + \
+            '\n</pre></code></div>'
 
     if os.path.isfile(filename):
         with open(filename, 'rU') as fppost:
             readData = fppost.read()
-            data = tickCodeRe.sub(tick2indent,readData).strip().split('\n')
+            readData = tickCodeRe.sub(tick2indent,readData)
+            data = tildeCodeRe.sub(tilde2indent,readData).strip().split('\n')
     return data
 
 def scanFunctions(folder):
