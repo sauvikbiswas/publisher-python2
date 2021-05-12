@@ -6,7 +6,7 @@ from functions import post_list
 folder = sys.argv[1]
 
 postFolder = os.path.join(folder,'posts')
-htmlFolder = os.path.join(folder,'html')
+htmlFolder = os.path.join(folder,'temp')
 
 def writeFile(folder, filename, data):
     if not os.path.isdir(folder):
@@ -17,7 +17,7 @@ def writeFile(folder, filename, data):
 
 def scanVariables(folder):
     postIdDict = {}
-    for root, dirs, files in os.walk(os.path.join(folder, 'posts')):
+    for root, dirs, files in os.walk(postFolder):
         for filename in files:
             postFile = os.path.join(folder, 'posts', filename)
             data = parse.readFile(postFile)
@@ -32,9 +32,10 @@ postIdDict = scanVariables(folder)
 extraVars = {}
 for functionName in functionRepo:
     extraVars[functionName] = functionRepo[functionName](postIdDict)
-    
+
+print "Generating Posts"
 for root, dirs, files in os.walk(postFolder):
     for filename in files:
         data, var = parse.generatePost(folder, filename, postIdDict, extraVars)
-        print filename.replace('.md','.html')
+        print "\t"+filename.replace('.md','.html')
         writeFile(htmlFolder, filename.replace('.md','.html'), data)
