@@ -1,11 +1,15 @@
-rm -r $1/html/*
+mkdir -p $1/temp
+rm -r $1/temp/*
 cp $1/functions.py .
 cp $1/substitute.py .
+cp $1/sync.cmd .
 python compile.py $1
-rsync -avz $1/sync/ $1/html
+rsync -acvz $1/temp/ $1/html
+rsync -acvz $1/sync/ $1/html
 rm functions.py*
 rm substitute.py*
 if [ $# -lt 2 ]
 then
-  rsync -avz $1/html/ $USERNAME@$HOST:$TARGET_DIR --delete
+  ./sync.cmd $1
 fi
+rm sync.cmd*

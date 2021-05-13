@@ -4,12 +4,12 @@ cp $1/functions.py .
 cp $1/substitute.py .
 cp $1/sync.cmd .
 python compile.py $1
-rsync -cv $1/temp $1/html
-rsync -avz $1/sync/ $1/html
+rsync -acvz $1/temp/ $1/html
+rsync -acvz $1/sync/ $1/html
 rm functions.py*
 rm substitute.py*
 if [ $# -lt 2 ]
 then
   ./sync.cmd $1
-  rm sync.cmd
 fi
+rm sync.cmd
