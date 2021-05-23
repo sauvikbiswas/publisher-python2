@@ -16,6 +16,7 @@ def writeFile(folder, filename, data):
     return
 
 def scanVariables(folder):
+    postIdDictPreLink = {}
     postIdDict = {}
     for root, dirs, files in os.walk(postFolder):
         for filename in files:
@@ -23,8 +24,19 @@ def scanVariables(folder):
             data = parse.readFile(postFile)
             _, postVars = parse.parseVars(data, removeVars=False)
             if 'post_id' in postVars:
-                postIdDict[postVars['post_id']] = (filename.replace('.md','.html'),
+                postIdDictPreLink[postVars['post_id']] = (filename.replace('.md','.html'),
                     postVars)
+
+    # Auxiliary set of variables for links (i.e. _<post_id> = <filename>)
+    fileLinkDict = {}
+    for post_id in postIdDictPreLink:
+        filename, _ = postIdDictPreLink[post_id]
+        fileLinkDict['@'+post_id] = filename
+    for post_id in postIdDictPreLink:
+        filename, postVars = postIdDictPreLink[post_id]
+        postVars.update(fileLinkDict)
+        postIdDict[post_id] = (filename, postVars)
+
     return postIdDict
 
 functionRepo = parse.scanFunctions(folder)

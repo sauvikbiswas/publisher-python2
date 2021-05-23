@@ -4,9 +4,11 @@ import os
 import sys
 from substitute import substitutionMap
 
-varDeclareRe = re.compile('^\s*\$\s*(\w+)\s*:\s*(.*)')
+#from pprint import pprint as pp
+
+varDeclareRe = re.compile('^\s*\$\s*([\w@!-]+)\s*:\s*(.*)')
 emptyLineRe = re.compile('^\s*$')
-varSubstituteRe = re.compile('\'\((\w+)\)')
+varSubstituteRe = re.compile('\'\(([\w@!-]+)\)')
 linkRe = re.compile('(\[.*?\]\()(.*?)(\))')
 functionRe = re.compile('^def ([^( ]+)')
 
@@ -120,6 +122,11 @@ def generatePost(folder, postFile, postIdDict = {}, postVarsExtra = {}):
 
     modData, postVars = parseVars(data)
     postVars.update(postVarsExtra)
+    # Add any extra variabled scanned in postIdDict
+    if 'post_id' in postVars:
+        if postVars['post_id'] in postIdDict:
+            filename, parsedVars = postIdDict[postVars['post_id']]
+            postVars.update(parsedVars)
     mdData = substituteVars(modData, postVars, postIdDict)
     postHTMLData = '\n'.join([
         '\n'.join(mdData[:len(datalist[0])]),
@@ -127,6 +134,7 @@ def generatePost(folder, postFile, postIdDict = {}, postVarsExtra = {}):
         '\n'.join(mdData[-len(datalist[2]):])
         ])
 
+    # Fixed substitutions
     for key in substitutionMap:
         postHTMLData = re.sub(key, substitutionMap[key], postHTMLData)
 
