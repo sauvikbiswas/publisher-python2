@@ -27,7 +27,7 @@ def scanVariables(folder):
                 postIdDictPreLink[postVars['post_id']] = (filename.replace('.md','.html'),
                     postVars)
 
-    # Auxiliary set of variables for links (i.e. _<post_id> = <filename>)
+    # Auxiliary set of variables for links (i.e. @<post_id> = <filename>)
     fileLinkDict = {}
     for post_id in postIdDictPreLink:
         filename, _ = postIdDictPreLink[post_id]
